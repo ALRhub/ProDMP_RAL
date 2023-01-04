@@ -1,0 +1,134 @@
+---
+# Slurm config bwuni gpu
+name: "SLURM"   # MUST BE "SLURM"
+partition: "gpu"  # "single" for cpu, "gpu_4" or gpu_8" for gpu
+job-name: "mnist" # this will be the experiment's name in slurm
+num_parallel_jobs: 20  # max number of jobs executed in parallel
+ntasks: 1   #  leave that like it is
+cpus-per-task: 2   # there are 10 cores for each GPU
+mem-per-cpu: 10000  # in MB
+time: 1000   # in minutes
+sbatch_args: # gpus need to be explicitly requested using this
+  gres=gpu:1: ""   #and this
+#  nodelist: "node3"
+
+---
+name: &name "pronmp_mix_digits"
+
+# Required: Can also be set in DEFAULT
+path: /tmp/result/mix_digits   # path for saving the results
+repetitions: 1    # number of repeated runs for each parameter combination
+
+# Required for AbstractIterativeExperiments only. Can also be set in DEFAULT
+iterations: 5000  # number of iterations per repetition.
+
+# Optional: Can also be set in DEFAULT
+# Only change these values if you are sure you know what you are doing.
+reps_per_job: 1    # number of repetitions in each job. useful for paralellization. defaults to 1.
+reps_in_parallel: 20
+
+wandb:
+  project: *name
+  group: training
+  entity: gelikit
+  log_interval: &interval 20
+  log_model: true
+  model_name: test_model_name
+
+params:
+  dim_lat: &dim_lat 128
+  act_func: &act_func leaky_relu
+  lr: 2e-4
+  wd: 5e-5
+  vali_log_interval: *interval
+  save_model_interval: 200
+  seed: 1234
+  runtime_noise: true
+  max_norm: 20
+
+  encoders:
+    cnn:
+      type: ProNMPEncoderCnnMlp
+      args:
+        image_size:
+          - 40
+          - 40
+        kernel_size: 5
+        num_cnn: 2
+        cnn_channels:
+          - 1
+          - 10
+          - 20
+        dim_lat: *dim_lat
+        obs_hidden:
+          avg_neuron: 128
+          num_hidden: 2
+          shape: 0.0
+        unc_hidden:
+          avg_neuron: 128
+          num_hidden: 3
+          shape: 0.0
+        act_func: *act_func
+
+  aggregator:
+    type: BayesianAggregator
+    args:
+      dim_lat: *dim_lat
+      multiple_steps: true
+      prior_mean: 0.0
+      prior_var: 1
+
+  decoder:
+    type: PBDecoder
+    args:
+      dim_add_in: 0
+      dim_val: 54
+      dim_lat: *dim_lat
+      std_only: False
+      mean_hidden:
+        avg_neuron: 128
+        num_hidden: 3
+        shape: 0.0
+      variance_hidden:
+        avg_neuron: 256
+        num_hidden: 4
+        shape: 0.0
+      act_func: *act_func
+
+  dataset:
+    name: s_mnist_25_mix_0_only
+    partition:
+      train: 0.7
+      validate: 0.15
+      test: 0.15
+    shuffle_set: False
+    batch_size: 512
+    shuffle_train_loader: True
+    transform: null
+    time_min: 0
+    time_max: 3
+    save_type: tensor
+    data:
+      images:
+        time_dependent: false
+        normalize: false
+      trajs:
+        time_dependent: true
+      init_x_y_dmp_w_g:
+        time_dependent: false
+
+  mp:
+    num_dof: 2
+    tau: 3.0
+    mp_type: prodmp
+    mp_args:
+      alpha_phase: 2.0
+      num_basis: 25
+      basis_bandwidth_factor: 2
+      num_basis_outside: 0
+      alpha: 25
+      dt: 0.01
+  assign_config:
+    num_ctx: 0
+    num_select: 10
+    num_all: 301
