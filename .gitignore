@@ -127,3 +127,32 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# Pycharm config files
+/.idea
+
+# Tensorboard
+runs/
+
+# Dataset
+dataset/
+
+# log
+log/
+
+# figures
+figure/
+
+# results
+result/
+/.pycharmrc
+
+# wandb
+**/wandb/
+
+# Tmp
+tmp_video/
+tmp/
+media/
+numerical_result/
