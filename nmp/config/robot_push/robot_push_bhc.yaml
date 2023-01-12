@@ -1,0 +1,83 @@
+---
+# Slurm config bwuni gpu
+name: "SLURM"   # MUST BE "SLURM"
+partition: "gpu"  # "single" for cpu, "gpu_4" or gpu_8" for gpu
+job-name: "robot_push_bhc" # this will be the experiment's name in slurm
+num_parallel_jobs: 20  # max number of jobs executed in parallel
+ntasks: 1   #  leave that like it is
+cpus-per-task: 2   # there are 10 cores for each GPU
+mem-per-cpu: 10000  # in MB
+time: 1000   # in minutes
+sbatch_args: # gpus need to be explicitly requested using this
+  gres=gpu:1: ""   #and this
+
+
+
+---
+name: &name robot_push_bhc
+
+# Required: Can also be set in DEFAULT
+path: /tmp/result/robot_push_bhc   # path for saving the results
+repetitions: 1    # number of repeated runs for each parameter combination
+
+# Required for AbstractIterativeExperiments only. Can also be set in DEFAULT
+iterations: 20000  # number of iterations per repetition.
+
+# Optional: Can also be set in DEFAULT
+# Only change these values if you are sure you know what you are doing.
+reps_per_job: 1    # number of repetitions in each job. useful for paralellization. defaults to 1.
+reps_in_parallel: 20
+
+wandb:
+  project: robot_push_bhc
+  group: *name
+  entity: gelikit
+  log_interval: &interval 20
+  log_model: true
+  model_name: model
+
+params:
+  act_func: &act_func leaky_relu
+  lr: 2e-4
+  wd: 5e-5
+  vali_log_interval: *interval
+  save_model_interval: 500
+  seed: 1234
+  max_norm: 150
+
+  mlp_net:
+    type: CNMPEncoderMlp       # Here just use this class as the network, it is not CNMP!
+    args:
+      name: BehaviorCloning
+      dim_obs: 6
+      dim_lat: 2               # Here is just the output size of the network, there is no latent space
+      obs_hidden:
+        avg_neuron: 128
+        num_hidden: 3
+        shape: 0.0
+      act_func: *act_func
+
+  dataset:
+    name: robot_push
+    partition:
+      train: 0.7
+      validate: 0.2
+      test: 0.1
+    shuffle_set: True
+    batch_size: 512
+    shuffle_train_loader: True
+    transform: null
+    time_min: 0
+    time_max: 3
+    save_type: tensor
+    data:
+      object_pos_ori:
+        time_dependent: true
+      des_cart_pos_vel:
+        time_dependent: true
+      box_robot_state:
+        time_dependent: true
+      file_index:
+        time_dependent: false
+        normalize: false
+

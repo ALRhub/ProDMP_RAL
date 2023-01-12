@@ -81,8 +81,8 @@ class OneDigit:
 
         # Reconstructor input
 
-        bc_time = torch.zeros(num_traj, num_agg, num_pred_pairs)
-        bc_vel = torch.zeros(num_traj, num_agg, num_pred_pairs, self.mp.num_dof)
+        init_time = torch.zeros(num_traj, num_agg, num_pred_pairs)
+        init_vel = torch.zeros(num_traj, num_agg, num_pred_pairs, self.mp.num_dof)
         times = util.add_expand_dim(batch["trajs"]["time"][:, pred_pairs],
                                     add_dim_indices=[1],
                                     add_dim_sizes=[num_agg])
@@ -126,12 +126,12 @@ class OneDigit:
 
         # Reconstruct predicted trajectories
         if self.zero_start:
-            bc_pos = torch.zeros_like(start_point)
+            init_pos = torch.zeros_like(start_point)
         else:
-            bc_pos = start_point
+            init_pos = start_point
         self.mp.update_inputs(times=times, params=mean, params_L=L,
-                                 bc_time=bc_time, bc_pos=bc_pos,
-                                 bc_vel=bc_vel)
+                                 init_time=init_time, init_pos=init_pos,
+                                 init_vel=init_vel)
         traj_pos_mean = self.mp.get_traj_pos(flat_shape=True)
 
         if self.zero_start:

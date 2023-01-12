@@ -8,9 +8,15 @@ conda or pip:
 pytorch, wandb
 
 pip:
-MP_PyTorch,
-cw2,
+
+MP_PyTorch: https://pypi.org/project/mp-pytorch/,
+
+cw2: https://pypi.org/project/cw2/,
+
 pyyaml,
+
 tabulate,
+
 natsort,
+
 python-mnist,
