@@ -5,7 +5,8 @@ The ProDMP alone can be used as an individual module. We implemented it together
 
 ## Pre-requisites
 conda or pip:
-pytorch, wandb
+pytorch (ML code base), 
+wandb (Online ML experiment logger)
 
 pip:
 
@@ -22,8 +23,13 @@ natsort (utility package),
 python-mnist (utility package),
 
 ##Run Exp:
+First init your wandb account: 'wandb init'
+
+Replace my username of wandb account in all config files by your wandb account
+'gelikit' -> 'my_wandb_username'
+
 Run experiment through this way:
 
-python exp.py config.yaml -o --nocodecopy
+'python exp.py config.yaml -o --nocodecopy'
 
-E.g. python digit_cw.py one_digit.yaml -o, --nocodecopy
+E.g. 'python digit_cw.py one_digit.yaml -o, --nocodecopy'
