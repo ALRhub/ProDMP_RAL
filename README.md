@@ -22,7 +22,7 @@ natsort (utility package),
 
 python-mnist (utility package),
 
-##Run Exp:
+## Run Exp:
 First init your wandb account: 'wandb init'
 
 Replace my username of wandb account in all config files by your wandb account
