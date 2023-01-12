@@ -3,20 +3,27 @@ This is the imitation learning code base of ProDMP, which combines the ProDMP wi
 The ProDMP alone can be used as an individual module. We implemented it together with the DMP and ProMP in https://github.com/ALRhub/MP_PyTorch. 
 
 
-Pre-requisites
+## Pre-requisites
 conda or pip:
 pytorch, wandb
 
 pip:
 
-MP_PyTorch: https://pypi.org/project/mp-pytorch/,
+MP_PyTorch (trajectory generator): https://pypi.org/project/mp-pytorch/,
 
-cw2: https://pypi.org/project/cw2/,
+cw2 (deploy experiment locally or on cluster): https://pypi.org/project/cw2/,
 
-pyyaml,
+pyyaml (parse yaml file),
 
-tabulate,
+tabulate (utility package),
 
-natsort,
+natsort (utility package),
 
-python-mnist,
+python-mnist (utility package),
+
+##Run Exp:
+Run experiment through this way:
+
+python exp.py config.yaml -o --nocodecopy
+
+E.g. python digit_cw.py one_digit.yaml -o, --nocodecopy
