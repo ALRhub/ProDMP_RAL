@@ -33,3 +33,6 @@ Run experiment through this way:
 'python exp.py config.yaml -o --nocodecopy'
 
 E.g. 'python digit_cw.py one_digit.yaml -o, --nocodecopy'
+
+## Dataset
+https://drive.google.com/drive/folders/1N_WomzuY2wDX5lOGVg5PvjTqkVGlA4pl?usp=sharing
